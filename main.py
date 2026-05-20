@@ -47,7 +47,7 @@ class AlarmClusteringService:
 
         records: List[dict] = [
             {
-                "source_id": a.source_id,
+                "source_id": a._source_id,
                 "token":     Embedder.make_token(a.managed_objects, a.probable_cause),
                 "vector":    self._embedder.lookup(
                                  Embedder.make_token(a.managed_objects, a.probable_cause)
@@ -63,7 +63,7 @@ class AlarmClusteringService:
                 status="ERROR",
                 message=f"All {len(alarms)} alarms are OOV — cannot cluster.",
                 results=[
-                    OnlineAlarmClusterResult(source_id=r["source_id"], cluster_id=-2, confidence=0.0)
+                    OnlineAlarmClusterResult(_source_id=r["source_id"], cluster_id=-2, confidence=0.0)
                     for r in records
                 ],
             ))
@@ -94,9 +94,9 @@ class AlarmClusteringService:
             status=status, message=message,
             results=[
                 OnlineAlarmClusterResult(
-                    source_id=a.source_id,
-                    cluster_id=item_map[a.source_id].cluster_id if a.source_id in item_map else -2,
-                    confidence=item_map[a.source_id].confidence if a.source_id in item_map else 0.0,
+                    _source_id=a._source_id,
+                    cluster_id=item_map[a._source_id].cluster_id if a._source_id in item_map else -2,
+                    confidence=item_map[a._source_id].confidence if a._source_id in item_map else 0.0,
                 )
                 for a in alarms
             ],
