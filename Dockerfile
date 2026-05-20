@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY requirements.txt .
 COPY wheels ./wheels/
-RUN pip install --no-cache-dir --no-index ./wheels -r requirements.txt
+RUN pip install --no-cache-dir --no-index ./wheels/*.whl
 
 COPY proto/     proto/
 COPY *.py       ./
