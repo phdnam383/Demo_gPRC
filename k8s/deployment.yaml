@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alarm-clustering-engine
+  namespace: ifm-mdaf
+  labels:
+    app: alarm-clustering-engine
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: alarm-clustering-engine
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: alarm-clustering-engine
+    spec:
+      # --- Graceful shutdown: allow in-flight gRPC calls to complete ------------
+      terminationGracePeriodSeconds: 90
+      
+      containers:
+        - name: alarm-clustering-engine
+          image: xxx
+          imagePullPolicy: Always
+          
+          ports:
+            - name: grpc
+              containerPort: 50051
+              protocol: TCP
+              
+          # --- Resource limits ----------------------------------------------------
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+              
+          # --- Liveness probe -----------------------------------------------------
+          livenessProbe:
+            tcpSocket:
+              port: grpc
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
+            
+          # --- Readiness probe ----------------------------------------------------
+          readinessProbe:
+            tcpSocket:
+              port: grpc
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+            
+          # --- Startup probe ------------------------------------------------------
+          # Allow up to 60 seconds to load the model before liveness begins testing
+          startupProbe:
+            tcpSocket:
+              port: grpc
+            failureThreshold: 12
+            periodSeconds: 5

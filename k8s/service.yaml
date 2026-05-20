@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: alarm-clustering-engine
+  namespace: ifm-mdaf
+  labels:
+    app: alarm-clustering-engine
+spec:
+  type: ClusterIP
+  selector:
+    app: alarm-clustering-engine
+  ports:
+    - name: grpc
+      port: 50051
+      targetPort: grpc
+      protocol: TCP
