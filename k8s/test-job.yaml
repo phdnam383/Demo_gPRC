@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: alarm-clustering-test
+  namespace: ifm-mdaf
+spec:
+  # Tự xóa Job sau 600 giây kể từ khi hoàn thành
+  ttlSecondsAfterFinished: 600
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: test-client
+          image: xxx  # phải giống image trong deployment.yaml
+          imagePullPolicy: Always
+          command: ["python", "test_client.py", "alarm-clustering-engine", "50051"]
